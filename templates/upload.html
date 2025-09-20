@@ -1,0 +1,57 @@
+{% block content %}
+<div class="upload-container">
+    <h2>Upload Photos</h2>
+    
+    <form id="uploadForm" method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="form-group">
+            <label for="photo">Select Photos (multiple allowed):</label>
+            <input type="file" id="photo" name="photo" multiple accept="image/*" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description (optional):</label>
+            <textarea id="description" name="description" rows="3" placeholder="Add a description for your photos..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Upload Photos</button>
+        </div>
+    </form>
+    
+    <div id="previewContainer" class="preview-container" style="display: none;">
+        <h3>Selected Photos Preview</h3>
+        <div id="imagePreviews" class="image-previews"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('photo').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('previewContainer');
+    const imagePreviews = document.getElementById('imagePreviews');
+    imagePreviews.innerHTML = '';
+    
+    const files = e.target.files;
+    if (files.length > 0) {
+        previewContainer.style.display = 'block';
+        
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-image';
+                    imagePreviews.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    } else {
+        previewContainer.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
+

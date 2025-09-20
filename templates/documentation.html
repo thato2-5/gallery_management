@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery App - Architecture Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .diagram-section {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+        }
+
+        .diagram-description {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .legend {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Photo Gallery App Architecture</h1>
+            <p class="subtitle">Comprehensive System Diagrams and Documentation</p>
+        </header>
+
+        <!-- System Architecture Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>System Architecture</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('system-arch')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('system-arch')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                High-level overview of the Flask photo gallery application architecture showing components, 
+                data flow, and external dependencies.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="system-arch" class="mermaid">
+flowchart TD
+    subgraph ClientSide [Client Side]
+        Browser[Web Browser]
+        UI[User Interface<br/>HTML/CSS/JS]
+    end
+
+    subgraph ServerSide [Server Side - Flask Application]
+        WebServer[Flask Web Server]
+        
+        subgraph Controllers [Flask Routes]
+            Index[Index Route<br/>/]
+            Upload[Upload Route<br/>/upload]
+            Gallery[Gallery Route<br/>/gallery]
+            API[API Routes<br/>/api/*]
+        end
+        
+        subgraph Services [Business Logic]
+            FileHandler[File Upload Handler]
+            ImageProcessor[Image Processor]
+            DBService[Database Service]
+        end
+        
+        subgraph DataLayer [Data Layer]
+            DB[(SQLite Database)]
+            Storage[File Storage<br/>static/uploads/]
+        end
+    end
+
+    Browser -->|HTTP Requests| WebServer
+    WebServer -->|Serves| UI
+    
+    WebServer --> Controllers
+    Controllers --> Services
+    Services --> DataLayer
+    
+    FileHandler -->|Saves files| Storage
+    DBService -->|CRUD Operations| DB
+    
+    ImageProcessor -->|Uses| Pillow[Pillow Library]
+    
+    style ClientSide fill:#e3f2fd
+    style ServerSide fill:#f3e5f5
+    style Controllers fill:#e8f5e8
+    style Services fill:#fff3e0
+    style DataLayer fill:#ffebee
+                </div>
+            </div>
+            
+            <div class="legend">
+                <h4>Legend:</h4>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #e3f2fd;"></div>
+                    <span>Client-side Components</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #f3e5f5;"></div>
+                    <span>Server-side Components</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #e8f5e8;"></div>
+                    <span>Controller Layer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #fff3e0;"></div>
+                    <span>Service Layer</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Database Schema Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>Database Schema</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('db-schema')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('db-schema')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                Entity-Relationship diagram showing the database structure with the Photo model and its attributes.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="db-schema" class="mermaid">
+erDiagram
+    PHOTO {
+        int id PK "Primary Key"
+        string filename "Unique filename"
+        string original_filename "Original filename"
+        string file_path "File storage path"
+        int file_size "File size in bytes"
+        string mime_type "MIME type"
+        datetime upload_date "Upload timestamp"
+        text description "Optional description"
+    }
+
+    note right of PHOTO: Stores metadata for uploaded photos\nFiles are stored in static/uploads/\nAutomatic timestamp on upload
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Sequence Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>Photo Upload Sequence</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('upload-seq')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('upload-seq')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                Sequence diagram illustrating the complete photo upload process from user interaction to database storage.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="upload-seq" class="mermaid">
+sequenceDiagram
+    participant User as User
+    participant Browser as Web Browser
+    participant Flask as Flask Server
+    participant FS as File System
+    participant DB as Database
+
+    User->>Browser: Selects photos to upload
+    Browser->>Browser: Validate file types<br/>Show preview
+    User->>Browser: Clicks upload button
+    
+    Browser->>Flask: POST /upload (multipart form)
+    
+    alt Multiple files selected
+        loop For each file
+            Flask->>Flask: Validate file type<br/>(allowed_extensions)
+            Flask->>Flask: Generate unique filename<br/>(UUID + extension)
+            Flask->>FS: Save file to static/uploads/
+            FS-->>Flask: File saved successfully
+            Flask->>Flask: Get file metadata<br/>(size, MIME type)
+            Flask->>DB: Insert photo record
+            DB-->>Flask: Record created
+        end
+    else No valid files
+        Flask-->>Browser: Error response
+    end
+    
+    Flask-->>Browser: Redirect to gallery<br/>with success message
+    Browser-->>User: Show success notification<br/>Display updated gallery
+                </div>
+            </div>
+        </section>
+
+        <!-- Component Relationship Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>Component Relationships</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('component-rel')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('component-rel')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                Diagram showing the relationships between different components of the application and their dependencies.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="component-rel" class="mermaid">
+flowchart LR
+    subgraph Frontend [Frontend Components]
+        HTML[Templates<br/>HTML Files]
+        CSS[Stylesheets<br/>CSS]
+        JS[JavaScript<br/>Client-side Logic]
+    end
+
+    subgraph Backend [Backend Components]
+        App[Flask App<br/>app.py]
+        Routes[Route Handlers]
+        Models[Data Models<br/>models.py]
+        Config[Configuration<br/>config.py]
+    end
+
+    subgraph External [External Dependencies]
+        SQLAlchemy[SQLAlchemy ORM]
+        Pillow[Pillow<br/>Image Processing]
+        Werkzeug[Werkzeug<br/>File handling]
+    end
+
+    subgraph Storage [Storage]
+        Database[SQLite Database]
+        FileSystem[File System<br/>static/uploads/]
+    end
+
+    HTML -->|Rendered by| Routes
+    CSS -->|Styles| HTML
+    JS -->|Enhances| HTML
+    
+    Routes -->|Uses| Models
+    Routes -->|Configures| Config
+    Models -->|Uses| SQLAlchemy
+    Routes -->|Uses| Pillow
+    Routes -->|Uses| Werkzeug
+    
+    Models -->|Persists to| Database
+    Routes -->|Stores files in| FileSystem
+    
+    style Frontend fill:#e3f2fd
+    style Backend fill:#f3e5f5
+    style External fill:#e8f5e8
+    style Storage fill:#fff3e0
+                </div>
+            </div>
+        </section>
+
+        <!-- API Flow Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>API Endpoints Flow</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('api-flow')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('api-flow')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                Flowchart showing the API endpoints and their request/response patterns for both REST API and web routes.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="api-flow" class="mermaid">
+flowchart TD
+    Start[HTTP Request] --> Router[Flask Router]
+    
+    Router -->|GET /| Index[Index Route]
+    Router -->|GET/POST /upload| Upload[Upload Route]
+    Router -->|GET /gallery| Gallery[Gallery Route]
+    Router -->|GET /api/photos| APIPhotos[API: Get Photos]
+    Router -->|POST /api/upload| APIUpload[API: Upload Photo]
+    Router -->|GET /photo/&lt;id&gt;| ViewPhoto[View Photo]
+    Router -->|POST /photo/&lt;id&gt;/delete| DeletePhoto[Delete Photo]
+    
+    Index -->|Response| RenderIndex[Render index.html]
+    Upload -->|GET| RenderUpload[Render upload.html]
+    Upload -->|POST| ProcessUpload[Process file upload]
+    Gallery -->|Response| RenderGallery[Render gallery.html<br/>with pagination]
+    
+    APIPhotos -->|Response| JSONPhotos[JSON array of photos]
+    APIUpload -->|Response| JSONResponse[JSON response<br/>with photo data]
+    
+    ViewPhoto -->|Response| ShowPhoto[Show photo details]
+    DeletePhoto -->|Response| RedirectGallery[Redirect to gallery]
+    
+    ProcessUpload --> Validate[Validate file]
+    Validate -->|Invalid| Error[Return error]
+    Validate -->|Valid| SaveFile[Save to filesystem]
+    SaveFile --> SaveDB[Save to database]
+    SaveDB --> Redirect[Redirect to gallery]
+    
+    style Router fill:#e3f2fd
+    style Index fill:#e8f5e8
+    style Upload fill:#e8f5e8
+    style Gallery fill:#e8f5e8
+    style APIPhotos fill:#fff3e0
+    style APIUpload fill:#fff3e0
+                </div>
+            </div>
+        </section>
+
+        <!-- Deployment Diagram -->
+        <section class="diagram-section">
+            <div class="section-header">
+                <h2>Deployment Architecture</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomDiagram('deployment')">Zoom</button>
+                    <button class="btn btn-secondary" onclick="resetDiagram('deployment')">Reset</button>
+                </div>
+            </div>
+            
+            <p class="diagram-description">
+                Deployment diagram showing how the application can be deployed in different environments.
+            </p>
+            
+            <div class="diagram-container">
+                <div id="deployment" class="mermaid">
+flowchart TB
+    subgraph Development [Development Environment]
+        DevServer[Flask Development Server<br/>localhost:5000]
+        DevDB[SQLite Database<br/>instance/database.db]
+        DevFiles[Local File Storage<br/>static/uploads/]
+    end
+
+    subgraph Production [Production Environment]
+        WebServer[Production Web Server<br/>Gunicorn/Nginx]
+        AppServer[Application Server]
+        ProdDB[Production Database<br/>SQLite/PostgreSQL]
+        ProdStorage[Cloud Storage<br/>or persistent volume]
+    end
+
+    subgraph Client [Client Access]
+        WebClient[Web Browser]
+        Mobile[Mobile Devices]
+        APIClient[API Clients]
+    end
+
+    WebClient -->|HTTP/HTTPS| WebServer
+    Mobile -->|HTTP/HTTPS| WebServer
+    APIClient -->|REST API| WebServer
+    
+    WebServer -->|Proxy| AppServer
+    AppServer -->|Read/Write| ProdDB
+    AppServer -->|Store files| ProdStorage
+    
+    DevServer -->|Read/Write| DevDB
+    DevServer -->|Store files| DevFiles
+    
+    style Development fill:#e3f2fd
+    style Production fill:#e8f5e8
+    style Client fill:#fff3e0
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Photo Gallery App Documentation | Generated with Mermaid.js</p>
+            <p>&copy; 2025 Photo Gallery Application</p>
+            <p>Powered By Monyamane Tech Solutions</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'Segoe UI, sans-serif',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35,
+                mirrorActors: true
+            }
+        });
+
+        // Zoom functionality
+        function zoomDiagram(diagramId) {
+            const diagram = document.getElementById(diagramId);
+            diagram.style.transform = diagram.style.transform === 'scale(1.5)' ? 'scale(1)' : 'scale(1.5)';
+            diagram.style.transformOrigin = 'center';
+        }
+
+        function resetDiagram(diagramId) {
+            const diagram = document.getElementById(diagramId);
+            diagram.style.transform = 'scale(1)';
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === '+') {
+                e.preventDefault();
+                const visibleDiagram = document.querySelector('.diagram-section:target .mermaid') || 
+                                      document.querySelector('.diagram-section .mermaid');
+                if (visibleDiagram) {
+                    visibleDiagram.style.transform = 'scale(1.2)';
+                    visibleDiagram.style.transformOrigin = 'center';
+                }
+            }
+            
+            if (e.ctrlKey && e.key === '-') {
+                e.preventDefault();
+                const visibleDiagram = document.querySelector('.diagram-section:target .mermaid') || 
+                                      document.querySelector('.diagram-section .mermaid');
+                if (visibleDiagram) {
+                    visibleDiagram.style.transform = 'scale(1)';
+                }
+            }
+            
+            if (e.key === '0' && e.ctrlKey) {
+                e.preventDefault();
+                const diagrams = document.querySelectorAll('.mermaid');
+                diagrams.forEach(diag => diag.style.transform = 'scale(1)');
+            }
+        });
+
+        // Make diagrams focusable for accessibility
+        document.querySelectorAll('.mermaid').forEach(diagram => {
+            diagram.setAttribute('tabindex', '0');
+            diagram.setAttribute('role', 'img');
+            diagram.setAttribute('aria-label', 'Interactive diagram');
+        });
+    </script>
+</body>
+</html>
+
